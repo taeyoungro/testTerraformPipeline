@@ -1,0 +1,53 @@
+name: 'Terraform CI/CD'
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  id-token: write # AWS OIDC 인증을 위해 필수
+  contents: read
+  pull-requests: write # PR에 plan 결과를 댓글로 남기기 위함
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. GitHub 레포지토리 코드 체크아웃
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # 2. AWS OIDC 연동 (Assume Role)
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::233812219901:role/oidc-TestOtherOrgAssumeRole # 본인의 IAM Role ARN
+        aws-region: ap-northeast-2
+
+    # 3. 테라폼 CLI 설치
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    # 4. 테라폼 초기화 (Backend S3 연결)
+    - name: Terraform Init
+      run: terraform init
+
+    # 5. 코드 포맷 및 문법 검사
+    - name: Terraform Format & Validate
+      run: |
+        terraform fmt -check
+        terraform validate
+
+    # 6. PR 생성 시 plan 결과 출력
+    - name: Terraform Plan
+      if: github.event_name == 'pull_request'
+      run: terraform plan -no-color
+
+    # 7. Main 브랜치 푸시/머지 시 실제 AWS 리소스 생성
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply -auto-approve -input=false
