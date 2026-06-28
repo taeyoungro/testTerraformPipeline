@@ -12,9 +12,8 @@ provider "aws" {
   region = "ap-northeast-2"
 }
 
-
 # ==========================================
-# 2. 테스트용 AWS VPC 리소스
+# AWS VPC 리소스 생성
 # ==========================================
 
 resource "aws_vpc" "main" {
@@ -27,4 +26,3 @@ resource "aws_vpc" "main" {
     ManagedBy   = "Terraform"
   }
 }
-
