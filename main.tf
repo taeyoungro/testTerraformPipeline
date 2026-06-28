@@ -28,11 +28,3 @@ resource "aws_vpc" "main" {
   }
 }
 
-# ==========================================
-# Outputs (GitHub Actions에 복사할 ARN 확인용)
-# ==========================================
-
-output "github_actions_role_arn" {
-  value       = aws_iam_role.github_actions.arn
-  description = "GitHub Actions 워크플로우 YAML의 role-to-assume에 입력할 ARN입니다."
-}
