@@ -1,5 +1,6 @@
 terraform {
-  required_version = ">= 1.0.0"
+  required_version = ">= 1.5.0"
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -9,12 +10,8 @@ terraform {
 }
 
 provider "aws" {
-  region = "ap-northeast-2"
+  region = var.aws_region
 }
-
-# ==========================================
-# AWS VPC 리소스 생성
-# ==========================================
 
 resource "aws_vpc" "main" {
   cidr_block           = "10.10.10.0/24"
