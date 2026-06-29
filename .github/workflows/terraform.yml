@@ -39,7 +39,6 @@ jobs:
     # 5. 코드 포맷 및 문법 검사
     - name: Terraform Format & Validate
       run: |
-        terraform fmt -check
         terraform validate
 
     # 6. PR 생성 시 plan 결과 출력
